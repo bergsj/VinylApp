@@ -1,0 +1,109 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime   @default(now())
+  records      Record[]
+  wantlist     Wantlist[]
+  sessions     Session[]
+  accounts     Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Record {
+  id              String    @id @default(cuid())
+  title           String
+  artist          String
+  year            Int?
+  label           String?
+  catalogNumber   String?
+  genre           String[]
+  style           String[]
+  country         String?
+  format          String?
+  notes           String?
+  discogsId       String?   @unique
+  barcodes        String[]
+  coverImage      String?
+  rating          Int?
+  condition       String?
+  mediaCondition  String?
+  sleeveCondition String?
+  purchasePrice   Float?
+  purchaseDate    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks          Track[]
+
+  @@index([artist])
+  @@index([userId])
+}
+
+model Track {
+  id       String  @id @default(cuid())
+  position String?
+  title    String
+  duration String?
+  recordId String
+  record   Record  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+}
+
+model Wantlist {
+  id        String   @id @default(cuid())
+  title     String
+  artist    String
+  year      Int?
+  label     String?
+  discogsId String?
+  notes     String?
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}

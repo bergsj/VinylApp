@@ -1,0 +1,15 @@
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Nav from "@/components/Nav";
+
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session) redirect("/login");
+
+  return (
+    <div className="flex min-h-screen">
+      <Nav />
+      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+    </div>
+  );
+}

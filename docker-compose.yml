@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vinyl-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vinyluser
+      POSTGRES_PASSWORD: vinylpass
+      POSTGRES_DB: vinyldb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vinyluser -d vinyldb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: vinyl-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DOMAIN: localhost,127.0.0.1,vinylapp.corp.fjall.nl
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: vinyl-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set minio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb --ignore-existing minio/vinyl-covers;
+      /usr/bin/mc anonymous set public minio/vinyl-covers;
+      exit 0;
+      "
+    restart: on-failure
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vinyl-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://vinyluser:vinylpass@postgres:5432/vinyldb
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_BUCKET: vinyl-covers
+      S3_REGION: us-east-1
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL}
+      DISCOGS_USER_AGENT: ${DISCOGS_USER_AGENT:-VinylApp/1.0}
+      DISCOGS_TOKEN: ${DISCOGS_TOKEN:-}
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  minio_data:
