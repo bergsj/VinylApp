@@ -18,14 +18,16 @@ export default async function WantlistPage() {
     <div className="p-4 md:p-8 max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Wantlist</h1>
-          <p className="text-zinc-400 text-sm">{items.length} item{items.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl font-bold uppercase tracking-widest">Wantlist</h1>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest font-light mt-0.5">
+            {items.length} item{items.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link
           href="/wantlist/add"
-          className="flex items-center gap-2 bg-amber-400 text-zinc-950 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-amber-300 transition-colors"
+          className="flex items-center gap-2 bg-amber-400 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs uppercase tracking-widest hover:bg-amber-300 transition-colors"
         >
-          <PlusCircle size={16} />
+          <PlusCircle size={14} />
           Add
         </Link>
       </div>
@@ -40,9 +42,9 @@ export default async function WantlistPage() {
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-4 bg-zinc-900 rounded-xl px-4 py-3">
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{item.title}</p>
-                <p className="text-sm text-zinc-400 truncate">{item.artist}{item.year ? ` · ${item.year}` : ""}{item.label ? ` · ${item.label}` : ""}</p>
-                {item.notes && <p className="text-xs text-zinc-500 mt-0.5 truncate">{item.notes}</p>}
+                <p className="font-semibold tracking-wide truncate">{item.title}</p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-wider truncate mt-0.5">{item.artist}{item.year ? ` · ${item.year}` : ""}{item.label ? ` · ${item.label}` : ""}</p>
+                {item.notes && <p className="text-xs text-zinc-600 font-light mt-1 truncate">{item.notes}</p>}
               </div>
               <WantlistActions id={item.id} />
             </div>

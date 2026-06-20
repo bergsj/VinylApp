@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { PlusCircle, Search, Disc3 } from "lucide-react";
-import CollectionView from "@/components/CollectionView";
+import CollectionGrid from "@/components/CollectionGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -35,26 +35,28 @@ export default async function CollectionPage({
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Collection</h1>
-          <p className="text-zinc-400 text-sm">{records.length} record{records.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl font-bold uppercase tracking-widest">Collection</h1>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest font-light mt-0.5">
+            {records.length} record{records.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link
           href="/add"
-          className="flex items-center gap-2 bg-amber-400 text-zinc-950 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-amber-300 transition-colors"
+          className="flex items-center gap-2 bg-amber-400 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs uppercase tracking-widest hover:bg-amber-300 transition-colors"
         >
-          <PlusCircle size={16} />
+          <PlusCircle size={14} />
           Add Record
         </Link>
       </div>
 
       <form className="mb-6">
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
           <input
             name="q"
             defaultValue={q}
             placeholder="Search artist, title, label…"
-            className="w-full pl-9 pr-4 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:border-amber-400 placeholder:text-zinc-500"
+            className="w-full pl-9 pr-4 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:border-amber-400 placeholder:text-zinc-600"
           />
         </div>
       </form>
@@ -70,7 +72,7 @@ export default async function CollectionPage({
           )}
         </div>
       ) : (
-        <CollectionView records={records} />
+        <CollectionGrid records={records} />
       )}
     </div>
   );

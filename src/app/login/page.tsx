@@ -30,14 +30,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <Disc3 size={32} className="text-amber-400" />
-          <h1 className="text-2xl font-bold">Vinyl Collection</h1>
+        <div className="flex flex-col items-center gap-3 mb-10">
+          <Disc3 size={36} className="text-amber-400" />
+          <h1 className="text-xl font-bold uppercase tracking-widest">Vinyl Collection</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-zinc-900 rounded-2xl p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-zinc-900 rounded-2xl p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1">Email</label>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Email</label>
             <input
               type="email"
               value={email}
@@ -48,7 +48,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1">Password</label>
+            <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2">Password</label>
             <input
               type="password"
               value={password}
@@ -59,15 +59,15 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-xs uppercase tracking-wide font-semibold">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-400 text-zinc-950 font-semibold py-2.5 rounded-lg hover:bg-amber-300 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-widest py-3 rounded-lg hover:bg-amber-300 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
-            {loading && <Loader2 size={16} className="animate-spin" />}
-            Sign in
+            {loading && <Loader2 size={14} className="animate-spin" />}
+            Sign In
           </button>
         </form>
       </div>

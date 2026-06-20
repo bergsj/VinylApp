@@ -21,10 +21,10 @@ export default async function RecordPage({ params }: { params: Promise<{ id: str
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/collection" className="text-zinc-400 hover:text-zinc-100">
-          <ArrowLeft size={20} />
+        <Link href="/collection" className="text-zinc-400 hover:text-zinc-100 shrink-0">
+          <ArrowLeft size={18} />
         </Link>
-        <h1 className="text-lg font-semibold">{record.artist}</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">{record.artist}</p>
       </div>
 
       <div className="flex gap-6 flex-col sm:flex-row">
@@ -43,8 +43,8 @@ export default async function RecordPage({ params }: { params: Promise<{ id: str
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold mb-1">{record.title}</h2>
-          <p className="text-zinc-400 text-lg mb-4">{record.artist}</p>
+          <h2 className="text-2xl font-bold tracking-wide mb-1">{record.title}</h2>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest font-light mb-4">{record.artist}</p>
 
           {record.rating && (
             <div className="flex gap-1 mb-4">
@@ -58,21 +58,21 @@ export default async function RecordPage({ params }: { params: Promise<{ id: str
             </div>
           )}
 
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-6">
-            {record.year && <><dt className="text-zinc-500">Year</dt><dd>{record.year}</dd></>}
-            {record.label && <><dt className="text-zinc-500">Label</dt><dd>{record.label}</dd></>}
-            {record.catalogNumber && <><dt className="text-zinc-500">Cat. No.</dt><dd className="font-mono text-xs">{record.catalogNumber}</dd></>}
-            {record.format && <><dt className="text-zinc-500">Format</dt><dd>{record.format}</dd></>}
-            {record.country && <><dt className="text-zinc-500">Country</dt><dd>{record.country}</dd></>}
-            {record.mediaCondition && <><dt className="text-zinc-500">Media</dt><dd>{record.mediaCondition}</dd></>}
-            {record.sleeveCondition && <><dt className="text-zinc-500">Sleeve</dt><dd>{record.sleeveCondition}</dd></>}
-            {record.purchasePrice && <><dt className="text-zinc-500">Paid</dt><dd>€{record.purchasePrice.toFixed(2)}</dd></>}
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+            {record.year && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Year</dt><dd className="text-sm">{record.year}</dd></>}
+            {record.label && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Label</dt><dd className="text-sm">{record.label}</dd></>}
+            {record.catalogNumber && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Cat. No.</dt><dd className="text-sm font-mono">{record.catalogNumber}</dd></>}
+            {record.format && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Format</dt><dd className="text-sm">{record.format}</dd></>}
+            {record.country && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Country</dt><dd className="text-sm">{record.country}</dd></>}
+            {record.mediaCondition && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Media</dt><dd className="text-sm">{record.mediaCondition}</dd></>}
+            {record.sleeveCondition && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Sleeve</dt><dd className="text-sm">{record.sleeveCondition}</dd></>}
+            {record.purchasePrice && <><dt className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">Paid</dt><dd className="text-sm">€{record.purchasePrice.toFixed(2)}</dd></>}
           </dl>
 
           {record.genre.length > 0 && (
             <div className="flex gap-2 flex-wrap mb-4">
               {[...record.genre, ...record.style].map((tag) => (
-                <span key={tag} className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-full">
+                <span key={tag} className="bg-zinc-800 text-zinc-400 text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full">
                   {tag}
                 </span>
               ))}
@@ -84,9 +84,9 @@ export default async function RecordPage({ params }: { params: Promise<{ id: str
           <div className="flex gap-3">
             <Link
               href={`/record/${record.id}/edit`}
-              className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-colors"
             >
-              <Edit size={14} />
+              <Edit size={13} />
               Edit
             </Link>
             <DeleteRecordButton id={record.id} />
@@ -97,13 +97,13 @@ export default async function RecordPage({ params }: { params: Promise<{ id: str
       {/* Tracklist */}
       {record.tracks.length > 0 && (
         <div className="mt-8">
-          <h3 className="font-semibold mb-3 text-zinc-300">Tracklist</h3>
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Tracklist</h3>
           <div className="bg-zinc-900 rounded-lg divide-y divide-zinc-800">
             {record.tracks.map((track) => (
-              <div key={track.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                <span className="text-zinc-500 w-8 text-right shrink-0">{track.position}</span>
-                <span className="flex-1">{track.title}</span>
-                {track.duration && <span className="text-zinc-500 text-xs">{track.duration}</span>}
+              <div key={track.id} className="flex items-center gap-3 px-4 py-2.5">
+                <span className="text-zinc-600 text-[11px] font-semibold w-8 text-right shrink-0 tracking-wide">{track.position}</span>
+                <span className="flex-1 text-sm">{track.title}</span>
+                {track.duration && <span className="text-zinc-500 text-[11px] font-light">{track.duration}</span>}
               </div>
             ))}
           </div>

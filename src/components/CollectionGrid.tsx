@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Disc3, Trash2 } from "lucide-react";
+import { Disc3, Trash2, CheckSquare } from "lucide-react";
 import { coverUrl } from "@/lib/s3";
 
 interface Record {
@@ -14,30 +14,31 @@ interface Record {
   coverImage?: string | null;
 }
 
-interface CollectionGridProps {
-  records: Record[];
-}
-
-export default function CollectionGrid({ records }: CollectionGridProps) {
+export default function CollectionGrid({ records }: { records: Record[] }) {
+  const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const enterSelect = () => setSelectMode(true);
+
+  const exitSelect = () => {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  };
+
   const toggleSelect = (id: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
-    setSelectedIds(newSelected);
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
   };
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === records.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(records.map((r) => r.id)));
-    }
+    setSelectedIds(
+      selectedIds.size === records.length
+        ? new Set()
+        : new Set(records.map((r) => r.id))
+    );
   };
 
   const handleBulkDelete = async () => {
@@ -46,18 +47,15 @@ export default function CollectionGrid({ records }: CollectionGridProps) {
 
     setIsDeleting(true);
     try {
-      const response = await fetch("/api/records/bulk-delete", {
+      const res = await fetch("/api/records/bulk-delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: Array.from(selectedIds) }),
       });
-
-      if (!response.ok) throw new Error("Failed to delete records");
-
+      if (!res.ok) throw new Error("Failed");
       window.location.reload();
-    } catch (error) {
+    } catch {
       alert("Error deleting records");
-      console.error(error);
     } finally {
       setIsDeleting(false);
     }
@@ -65,63 +63,125 @@ export default function CollectionGrid({ records }: CollectionGridProps) {
 
   return (
     <>
-      {selectedIds.size > 0 && (
-        <div className="mb-6 p-4 bg-amber-900/20 border border-amber-700 rounded-lg flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={selectedIds.size === records.length}
-              onChange={toggleSelectAll}
-              className="w-5 h-5"
-            />
-            <span className="text-sm font-medium">
-              {selectedIds.size} of {records.length} selected
-            </span>
+      {/* Toolbar */}
+      {selectMode ? (
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleSelectAll}
+              className="text-[11px] font-bold text-amber-400 hover:text-amber-300 uppercase tracking-widest transition-colors"
+            >
+              {selectedIds.size === records.length ? "Deselect All" : "Select All"}
+            </button>
+            {selectedIds.size > 0 && (
+              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
+                {selectedIds.size} selected
+              </span>
+            )}
           </div>
+          <div className="flex items-center gap-3">
+            {selectedIds.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-colors"
+              >
+                <Trash2 size={13} />
+                {isDeleting ? "Deleting…" : "Delete"}
+              </button>
+            )}
+            <button
+              onClick={exitSelect}
+              className="text-[11px] font-semibold text-zinc-400 hover:text-zinc-100 uppercase tracking-widest transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-4 flex justify-end">
           <button
-            onClick={handleBulkDelete}
-            disabled={isDeleting}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            onClick={enterSelect}
+            className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-400 hover:text-zinc-100 uppercase tracking-widest transition-colors"
           >
-            <Trash2 size={16} />
-            {isDeleting ? "Deleting..." : "Delete Selected"}
+            <CheckSquare size={14} />
+            Select
           </button>
         </div>
       )}
 
+      {/* Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {records.map((record) => (
-          <div key={record.id} className="relative group">
-            <input
-              type="checkbox"
-              checked={selectedIds.has(record.id)}
-              onChange={() => toggleSelect(record.id)}
-              className="absolute top-2 left-2 w-4 h-4 z-10 cursor-pointer"
-            />
-            <Link href={`/record/${record.id}`} className="block">
-              <div className={`aspect-square bg-zinc-800 rounded-lg overflow-hidden mb-2 relative ${
-                selectedIds.has(record.id) ? "ring-2 ring-amber-400" : ""
-              }`}>
-                {record.coverImage ? (
-                  <Image
-                    src={coverUrl(record.coverImage)}
-                    alt={record.title}
-                    fill
-                    unoptimized
-                    className="object-cover group-hover:scale-105 transition-transform duration-200"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Disc3 size={40} className="text-zinc-600" />
+        {records.map((record) => {
+          const selected = selectedIds.has(record.id);
+          const cover = (
+            <div
+              className={`aspect-square bg-zinc-800 rounded-lg overflow-hidden mb-2 relative transition-all duration-150 ${
+                selected ? "ring-2 ring-amber-400" : ""
+              }`}
+            >
+              {record.coverImage ? (
+                <Image
+                  src={coverUrl(record.coverImage)}
+                  alt={record.title}
+                  fill
+                  unoptimized
+                  className="object-cover group-hover:scale-105 transition-transform duration-200"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Disc3 size={40} className="text-zinc-600" />
+                </div>
+              )}
+
+              {/* Checkbox — only visible in select mode */}
+              {selectMode && (
+                <div className="absolute top-2 left-2">
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      selected
+                        ? "bg-amber-400 border-amber-400"
+                        : "bg-black/40 border-white/70 backdrop-blur-sm"
+                    }`}
+                  >
+                    {selected && (
+                      <svg viewBox="0 0 10 8" className="w-3 h-3 fill-zinc-950">
+                        <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
                   </div>
-                )}
-              </div>
-              <p className="text-sm font-medium leading-tight truncate">{record.title}</p>
-              <p className="text-xs text-zinc-400 truncate">{record.artist}</p>
-              {record.year && <p className="text-xs text-zinc-500">{record.year}</p>}
-            </Link>
-          </div>
-        ))}
+                </div>
+              )}
+            </div>
+          );
+
+          const meta = (
+            <>
+              <p className="text-sm font-semibold leading-tight truncate tracking-wide">{record.title}</p>
+              <p className="text-[11px] text-zinc-500 uppercase tracking-wider truncate">{record.artist}</p>
+              {record.year && <p className="text-[11px] text-zinc-600 font-light">{record.year}</p>}
+            </>
+          );
+
+          return (
+            <div key={record.id} className="relative group">
+              {selectMode ? (
+                <button
+                  className="block w-full text-left"
+                  onClick={() => toggleSelect(record.id)}
+                >
+                  {cover}
+                  {meta}
+                </button>
+              ) : (
+                <Link href={`/record/${record.id}`} className="block">
+                  {cover}
+                  {meta}
+                </Link>
+              )}
+            </div>
+          );
+        })}
       </div>
     </>
   );
