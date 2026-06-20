@@ -27,6 +27,7 @@ export default async function CollectionPage({
           }
         : {}),
     },
+    select: { id: true, title: true, artist: true, year: true, coverImage: true, rating: true },
     orderBy: [{ artist: "asc" }, { title: "asc" }],
   });
 

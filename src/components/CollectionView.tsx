@@ -11,6 +11,7 @@ interface Record {
   artist: string;
   year?: number | null;
   coverImage?: string | null;
+  rating?: number | null;
 }
 
 export default function CollectionView({ records }: { records: Record[] }) {

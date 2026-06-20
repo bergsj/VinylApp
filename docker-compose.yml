@@ -74,7 +74,7 @@ services:
       S3_SECRET_KEY: minioadmin
       S3_BUCKET: vinyl-covers
       S3_REGION: us-east-1
-      S3_PUBLIC_URL: ${S3_PUBLIC_URL}
+      NEXT_PUBLIC_S3_PUBLIC_URL: ${NEXT_PUBLIC_S3_PUBLIC_URL}
       DISCOGS_USER_AGENT: ${DISCOGS_USER_AGENT:-VinylApp/1.0}
       DISCOGS_TOKEN: ${DISCOGS_TOKEN:-}
     ports:
