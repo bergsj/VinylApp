@@ -14,7 +14,7 @@ export const s3 = new S3Client({
 export const BUCKET = process.env.S3_BUCKET ?? "vinyl-covers";
 
 export function coverUrl(key: string) {
-  return `${process.env.S3_PUBLIC_URL}/${key}`;
+  return `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/${key}`;
 }
 
 export async function getUploadUrl(key: string, contentType: string) {

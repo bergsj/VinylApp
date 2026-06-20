@@ -229,7 +229,7 @@ export default function RecordForm({ record }: { record?: RecordData }) {
                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-zinc-700 transition-colors text-left"
               >
                 {r.thumb ? (
-                  <Image src={r.thumb} alt="" width={40} height={40} className="rounded shrink-0" />
+                  <Image src={`/api/proxy-image?url=${encodeURIComponent(r.thumb)}`} alt="" width={40} height={40} unoptimized className="rounded shrink-0" />
                 ) : (
                   <div className="w-10 h-10 bg-zinc-700 rounded shrink-0 flex items-center justify-center">
                     <Disc3 size={16} className="text-zinc-500" />
@@ -264,7 +264,13 @@ export default function RecordForm({ record }: { record?: RecordData }) {
         <div className="flex items-center gap-4">
           <div className="w-24 h-24 bg-zinc-800 rounded-lg overflow-hidden relative shrink-0">
             {coverPreview ? (
-              <Image src={coverPreview} alt="Cover" fill className="object-cover" />
+              <Image
+                src={discogsCoverUrl ? `/api/proxy-image?url=${encodeURIComponent(coverPreview)}` : coverPreview}
+                alt="Cover"
+                fill
+                unoptimized
+                className="object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Disc3 size={28} className="text-zinc-600" />

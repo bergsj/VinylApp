@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { PlusCircle, Search, Disc3 } from "lucide-react";
-import CollectionGrid from "@/components/CollectionGrid";
+import CollectionView from "@/components/CollectionView";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +69,7 @@ export default async function CollectionPage({
           )}
         </div>
       ) : (
-        <CollectionGrid records={records} />
+        <CollectionView records={records} />
       )}
     </div>
   );

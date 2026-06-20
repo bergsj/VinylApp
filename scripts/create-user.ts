@@ -2,6 +2,7 @@
  * Create the initial admin user.
  * Usage: npx tsx scripts/create-user.ts <email> <password>
  */
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
